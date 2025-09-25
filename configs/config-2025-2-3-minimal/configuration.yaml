@@ -1,0 +1,11 @@
+# Minimal Home Assistant config (no devices/automations pre-defined)
+homeassistant:
+  name: "HA Minimal 2025.2.3"
+  time_zone: "Europe/Oslo"
+  unit_system: metric
+
+# Keep the default_config only; user will add integrations after login
+default_config:
+
+# Wire automations file but keep it empty for user control
+automation: !include automations.yaml

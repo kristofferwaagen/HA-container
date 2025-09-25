@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  baseline-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx (optional but modern)
+        uses: docker/setup-buildx-action@v3
+
+      - name: Prepare env file
+        run: |
+          cp .env.example .env
+          # Tighten runtime for CI (avoid clock skew issues and reduce container noise)
+          sed -i 's/^HA_VERSION=.*/HA_VERSION=stable/' .env || true
+
+      - name: Start Home Assistant
+        run: |
+          docker compose up -d
+
+      - name: Wait for core startup (log heuristic)
+        run: |
+          for i in {1..90}; do
+            if docker logs homeassistant 2>&1 | grep -q "Home Assistant initialized"; then
+              echo "Home Assistant initialized."; break; fi
+            sleep 2
+          done
+          docker ps -a
+
+      - name: Install deps for script
+        run: sudo apt-get update && sudo apt-get install -y jq curl
+
+      - name: Run entity check
+        env:
+          HA_CI_TOKEN: ${{ secrets.HA_CI_TOKEN }}
+        run: bash scripts/check_entities.sh
+
+      - name: Show failing logs on error
+        if: failure()
+        run: |
+          echo "---- Home Assistant Logs (tail) ----"
+          docker logs homeassistant --tail=300 || true
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v

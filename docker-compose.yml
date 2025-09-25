@@ -1,0 +1,21 @@
+services:
+  homeassistant:
+    image: homeassistant/home-assistant:${HA_VERSION}
+    # After first pull you may replace the above with a digest-pinned form:
+    # image: homeassistant/home-assistant@${HA_IMAGE_DIGEST}
+    container_name: homeassistant
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+    ports:
+      - "${HA_PORT}:8123"
+    volumes:
+      - ${CONFIG_DIR}:/config
+    # Deterministic read-only mode example (uncomment to enable):
+    # read_only: true
+    # tmpfs:
+    #   - /tmp
+    #   - /run
+    #   - /config:rw,size=64m

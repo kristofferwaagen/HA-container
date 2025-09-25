@@ -1,0 +1,52 @@
+homeassistant:
+  name: HA Lab Baseline
+  time_zone: Europe/Oslo
+  unit_system: metric
+  country: "NO"
+  currency: "NOK"
+  # Location for automatic Met (Norwegian weather) integration
+  latitude: 60.3913
+  longitude: 5.3221
+  elevation: 12
+
+# NOTE ON WEATHER ENTITY (weather.forecast_home):
+# You won't see a YAML block for the weather integration here. Home Assistant
+# auto-creates the Met weather config entry from these latitude/longitude values
+# (set during onboarding) together with `default_config:`. The integration is
+# stored internally in `.storage/core.config_entries`, and the entity metadata
+# lives in `.storage/core.entity_registry`. We only declare the virtual light in
+# YAML because it's a custom template entity; the weather provider requires no
+# manual YAML.
+
+# Core default set of integrations (UI, history, energy, etc.)
+default_config:
+
+## Internal state holder for the virtual light (kept minimal)
+input_boolean:
+  virtual_light_state:
+    name: Virtual Light State (Internal)
+    icon: mdi:lightbulb-outline
+
+# Virtual light (template) backed by the boolean; demonstrates device-like capability
+light:
+  - platform: template
+    lights:
+      lab_virtual_light:
+        unique_id: lab_virtual_light
+        friendly_name: "Lab Virtual Light"
+        value_template: "{{ is_state('input_boolean.virtual_light_state', 'on') }}"
+        turn_on:
+          service: input_boolean.turn_on
+          target:
+            entity_id: input_boolean.virtual_light_state
+        turn_off:
+          service: input_boolean.turn_off
+          target:
+            entity_id: input_boolean.virtual_light_state
+
+automation: !include_dir_merge_list automations
+
+# A simple recorder retention to keep DB small/deterministic
+recorder:
+  purge_keep_days: 3
+  commit_interval: 30

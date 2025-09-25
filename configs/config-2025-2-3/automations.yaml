@@ -1,0 +1,29 @@
+# Home Assistant Baseline Automations
+
+# Toggle lab switch every minute for demonstration
+- id: "lab_switch_toggle"
+  alias: "Lab Switch Toggle"
+  description: "Toggle the lab switch every minute for testing"
+  trigger:
+    - platform: time_pattern
+      minutes: "/1"
+  action:
+    - service: input_boolean.toggle
+      target:
+        entity_id: input_boolean.lab_switch
+
+# Log comfort index every 10 minutes
+- id: "comfort_index_logger"
+  alias: "Comfort Index Logger"
+  description: "Log the lab comfort index every 10 minutes"
+  trigger:
+    - platform: time_pattern
+      minutes: "/10"
+  action:
+    - service: system_log.write
+      data:
+        message: >
+          Lab Comfort Index: {{ states('sensor.lab_comfort_index') }}% 
+          (Temp: {{ states('sensor.lab_temperature') }}°C, 
+           Humidity: {{ states('sensor.lab_humidity') }}%)
+        level: info
