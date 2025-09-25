@@ -26,15 +26,9 @@ jobs:
       - name: Start Home Assistant
         run: |
           docker compose up -d
-
-      - name: Wait for core startup (log heuristic)
-        run: |
-          for i in {1..90}; do
-            if docker logs homeassistant 2>&1 | grep -q "Home Assistant initialized"; then
-              echo "Home Assistant initialized."; break; fi
-            sleep 2
-          done
-          docker ps -a
+      # Removed explicit log wait; the entity check script now performs robust polling.
+      - name: Show container status
+        run: docker ps -a
 
       - name: Install deps for script
         run: sudo apt-get update && sudo apt-get install -y jq curl
