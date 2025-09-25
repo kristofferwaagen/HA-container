@@ -49,12 +49,6 @@ docker compose up -d
 docker compose restart homeassistant
 ```
 
-## Notes
-
-- No blueprints bundled (directory removed to avoid auto-seeding examples).
-- Keep `.env` out of version control (already ignored).
-- Do not commit `config/.storage/` (internal state).
-
-## CI (If Used)
+## CI
 
 Script `scripts/check_entities.sh` asserts presence of virtual light + weather and absence of legacy entities.
