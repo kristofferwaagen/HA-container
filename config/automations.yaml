@@ -1,5 +1,5 @@
-# Single Goodnight routine automation used for migration experiments.
-# It turns off all lights, locks the front door, and lowers the thermostat.
+# Goodnight routine used for migration experiments.
+# This turns off all lights, locks the front door, and lowers the thermostat.
 
 - alias: Goodnight Routine
   id: goodnight_routine
@@ -8,6 +8,7 @@
     # Manual trigger via a Goodnight toggle in the UI
     - platform: state
       entity_id: input_boolean.goodnight
+      from: "off"
       to: "on"
     # Time-based trigger at 23:00 each night
     - platform: time
@@ -36,8 +37,3 @@
     - service: input_boolean.turn_on
       target:
         entity_id: input_boolean.goodnight
-
-    - service: logbook.log
-      data:
-        name: "Goodnight Routine"
-        message: "All lights off, front door locked, thermostat set to 18°C"

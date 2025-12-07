@@ -81,10 +81,27 @@
         "access_token_expiration": 1800.0,
         "token": "c0367b3439ebaffa2a75ec788e08af4b0a4e529baaf01a833432ee0b26b2803c5aeacd21ffee7e266dda9c5a2a8667413a824e5b9e7b73ccc6c6af0ab2608149",
         "jwt_key": "4f5b759a4948151cf9383569f416bc5c8622cfe49ee21561df37aff917aa9cf632adc1c7e95e01e83333faff90f2d5a84144cc300fb0756ae5d3016a8dcd1cd4",
-        "last_used_at": "2025-12-07T14:14:06.035143+00:00",
-        "last_used_ip": "192.168.65.1",
-        "expire_at": 1772892846.035143,
+        "last_used_at": "2025-12-07T15:27:44.600517+00:00",
+        "last_used_ip": "157.249.81.141",
+        "expire_at": 1772897264.600517,
         "credential_id": "08cc56d88ee84ba3bf34a6ba0e146cb3",
+        "version": "2025.10.3"
+      },
+      {
+        "id": "279cb2f6ebf14b83a7f1e6fc59e9fef4",
+        "user_id": "af9aaa6da183437982d31eaf69ec64d1",
+        "client_id": null,
+        "client_name": "Exporter",
+        "client_icon": null,
+        "token_type": "long_lived_access_token",
+        "created_at": "2025-12-07T14:20:46.790445+00:00",
+        "access_token_expiration": 315360000.0,
+        "token": "6b1e0219c578482c5057edf746986771d7a126a6f771ed4a7c918471f570f2b7bf0108e219ff70633c4c29d5d853ec1cd4d0c4a5040b9ebfb0d6000c4321a796",
+        "jwt_key": "1fa85383960db38a88b7b5c99841b155a81b4aa0f0beec01ebb281667431443a8487b6eaa66032baff73f0f92fdbd65508e81376d355e75d677f93281102baa1",
+        "last_used_at": "2025-12-07T14:20:46.790839+00:00",
+        "last_used_ip": null,
+        "expire_at": null,
+        "credential_id": null,
         "version": "2025.10.3"
       }
     ]
