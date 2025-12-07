@@ -1,8 +1,0 @@
-homeassistant:
-  name: "HA Minimal"
-  time_zone: Europe/Oslo
-  unit_system: metric
-
-default_config:
-# Add your integrations, helpers, and automations via the UI.
-# After onboarding: create desired test entities, then freeze the config directory.

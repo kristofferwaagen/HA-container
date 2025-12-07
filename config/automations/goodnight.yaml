@@ -1,0 +1,43 @@
+# Single Goodnight routine automation used for migration experiments.
+# It turns off all lights, locks the front door, and lowers the thermostat.
+
+- alias: Goodnight Routine
+  id: goodnight_routine
+  mode: single
+  trigger:
+    # Manual trigger via a Goodnight toggle in the UI
+    - platform: state
+      entity_id: input_boolean.goodnight
+      to: "on"
+    # Time-based trigger at 23:00 each night
+    - platform: time
+      at: "23:00:00"
+  condition:
+    # Only run in the late evening / night
+    - condition: time
+      after: "21:00:00"
+      before: "03:00:00"
+  action:
+    - service: light.turn_off
+      target:
+        entity_id: light.all_lights
+
+    - service: lock.lock
+      target:
+        entity_id: lock.front_door
+
+    - service: climate.set_temperature
+      target:
+        entity_id: climate.house_thermostat
+      data:
+        temperature: 18
+
+    # Mark Goodnight toggle as on to reflect state
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.goodnight
+
+    - service: logbook.log
+      data:
+        name: "Goodnight Routine"
+        message: "All lights off, front door locked, thermostat set to 18°C"

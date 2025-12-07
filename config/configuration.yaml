@@ -1,52 +1,125 @@
 homeassistant:
-  name: HA Lab Baseline
+  name: Goodnight Routine Lab
   time_zone: Europe/Oslo
   unit_system: metric
-  country: "NO"
-  currency: "NOK"
-  # Location for automatic Met (Norwegian weather) integration
-  latitude: 60.3913
-  longitude: 5.3221
-  elevation: 12
 
-# NOTE ON WEATHER ENTITY (weather.forecast_home):
-# You won't see a YAML block for the weather integration here. Home Assistant
-# auto-creates the Met weather config entry from these latitude/longitude values
-# (set during onboarding) together with `default_config:`. The integration is
-# stored internally in `.storage/core.config_entries`, and the entity metadata
-# lives in `.storage/core.entity_registry`. We only declare the virtual light in
-# YAML because it's a custom template entity; the weather provider requires no
-# manual YAML.
-
-# Core default set of integrations (UI, history, energy, etc.)
 default_config:
 
-## Internal state holder for the virtual light (kept minimal)
-input_boolean:
-  virtual_light_state:
-    name: Virtual Light State (Internal)
-    icon: mdi:lightbulb-outline
+# === Virtual devices for Goodnight use case ===
 
-# Virtual light (template) backed by the boolean; demonstrates device-like capability
+input_boolean:
+  bedroom_light_state:
+    name: Bedroom Light State (Virtual)
+    icon: mdi:lamp
+  living_room_light_state:
+    name: Living Room Light State (Virtual)
+    icon: mdi:ceiling-light
+  front_door_locked:
+    name: Front Door Locked (Virtual)
+    icon: mdi:door-closed-lock
+  virtual_heater_state:
+    name: Virtual Heater State
+    icon: mdi:radiator
+  goodnight:
+    name: Goodnight
+    icon: mdi:moon-waning-crescent
+
+input_number:
+  virtual_temperature:
+    name: Virtual Room Temperature
+    initial: 21
+    min: 5
+    max: 30
+    step: 0.5
+    unit_of_measurement: "°C"
+
 light:
   - platform: template
     lights:
-      lab_virtual_light:
-        unique_id: lab_virtual_light
-        friendly_name: "Lab Virtual Light"
-        value_template: "{{ is_state('input_boolean.virtual_light_state', 'on') }}"
+      bedroom:
+        friendly_name: "Bedroom Light"
+        unique_id: bedroom_light
+        value_template: "{{ is_state('input_boolean.bedroom_light_state', 'on') }}"
         turn_on:
           service: input_boolean.turn_on
           target:
-            entity_id: input_boolean.virtual_light_state
+            entity_id: input_boolean.bedroom_light_state
         turn_off:
           service: input_boolean.turn_off
           target:
-            entity_id: input_boolean.virtual_light_state
+            entity_id: input_boolean.bedroom_light_state
+      living_room:
+        friendly_name: "Living Room Light"
+        unique_id: living_room_light
+        value_template: "{{ is_state('input_boolean.living_room_light_state', 'on') }}"
+        turn_on:
+          service: input_boolean.turn_on
+          target:
+            entity_id: input_boolean.living_room_light_state
+        turn_off:
+          service: input_boolean.turn_off
+          target:
+            entity_id: input_boolean.living_room_light_state
+
+light group:
+  - platform: group
+    name: "All Lights"
+    unique_id: all_lights
+    entities:
+      - light.bedroom
+      - light.living_room
+
+lock:
+  - platform: template
+    name: "Front Door"
+    unique_id: front_door_lock
+    value_template: "{{ is_state('input_boolean.front_door_locked', 'on') }}"
+    lock:
+      service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.front_door_locked
+    unlock:
+      service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.front_door_locked
+
+switch:
+  - platform: template
+    switches:
+      virtual_heater:
+        friendly_name: "Virtual Heater"
+        unique_id: virtual_heater
+        value_template: "{{ is_state('input_boolean.virtual_heater_state', 'on') }}"
+        turn_on:
+          service: input_boolean.turn_on
+          target:
+            entity_id: input_boolean.virtual_heater_state
+        turn_off:
+          service: input_boolean.turn_off
+          target:
+            entity_id: input_boolean.virtual_heater_state
+
+template:
+  - sensor:
+      - name: "Room Temperature"
+        unique_id: room_temperature_virtual
+        unit_of_measurement: "°C"
+        state: "{{ states('input_number.virtual_temperature') }}"
+        device_class: temperature
+        state_class: measurement
+
+climate:
+  - platform: generic_thermostat
+    name: "House Thermostat"
+    unique_id: house_thermostat
+    heater: switch.virtual_heater
+    target_sensor: sensor.room_temperature
+    min_temp: 16
+    max_temp: 24
+    ac_mode: false
+    target_temp: 21
+    cold_tolerance: 0.5
+    hot_tolerance: 0.5
+    precision: 0.5
 
 automation: !include_dir_merge_list automations
-
-# A simple recorder retention to keep DB small/deterministic
-recorder:
-  purge_keep_days: 3
-  commit_interval: 30
